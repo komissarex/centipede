@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8" />
+
+		<title>{% block title %}{% endblock %}</title>
+
+		<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+		<style>
+			body {
+				padding-top: 60px;
+				padding-bottom: 40px;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="brand" href="/">Centipede</a>
+					<div class="nav-collapse collapse">
+						<ul class="nav">
+						
+							<li {% if tasks_active is defined %} class="active" {% endif %}>
+								<a href="#">Задачи</a>
+							</li>
+							<li>
+								<a href="#about">Состояние системы</a>
+							</li>
+							<li>
+								<a href="#contact">Таблица результатов</a>
+							</li>
+							<li>
+								<a href="#">Вопрос жюри</a>
+							</li>
+						</ul>
+						
+						<ul class="nav pull-right">
+							<li>
+								<a href="#contact">Регистрация</a>
+							</li>
+							<li>
+								<a href="#">Вход</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="container">
+			
+			<div class="row">
+				{% block content %}{% endblock %}
+			</div>
+			
+			<hr>
+			
+			<footer>
+				<small>
+					&copy; 2012<a href="javascript:void(0)" class="easter-egg">,</a> powered by somebody that you used to know.
+					<br><p class="real-copyright hide">do you really want to contact me? try <a href="mailto:komissarex@gmail.com">komissarex[at]gmail.com</a> then.</p>
+				</small>
+			</footer>
+
+		</div>
+
+		<script src="/static/js/jquery-1.8.2.min.js"></script>
+		<script>
+			$(document).ready(function() {
+				$(".easter-egg").click(function(event) {
+					$(".real-copyright").slideToggle("slow");
+				});
+			});
+		</script>
+	</body>
+</html>
