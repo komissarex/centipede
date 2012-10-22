@@ -4,18 +4,18 @@
     Вход
 {% endblock %}
 
-{% block content %}
-
+{% block legend %}
     <legend>
         Вход в систему
     </legend>
-    <form style="margin: 0px" accept-charset="UTF-8" action="/login" method="post">
+{% endblock %}
+
+{% block content %}
+    <form style="margin: 0" accept-charset="UTF-8" action="/login" method="post">
         <fieldset class='textbox' style="padding:10px">
-            <input name="team_id" style="margin-top: 8px" type="text" placeholder="TEAM_ID" />
-            <input name="password" style="margin-top: 8px" type="password" placeholder="пароль" />
-            <input name="commit" type="submit" value="Вход" />
+            <input name="team_id" style="margin-top: 8px" type="text" placeholder="TEAM_ID"/>
+            <input name="password" style="margin-top: 8px" type="password" placeholder="пароль"/>
+            <input name="commit" type="submit" value="Вход"/>
         </fieldset>
     </form>
-    {{ team_id }}<br>
-    {{ password }}
 {% endblock %}

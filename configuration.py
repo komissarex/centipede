@@ -1,7 +1,7 @@
 #global settings
  
 DEBUG = True
-SECRET = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT;aob458uqp23asldf2q'
+SECRET = 'L\xd4\x8c\x15\xe5;\x19\xf8\xb9\xfa.\xac\x82\x95\xe4\x9es\xbcn\xffz\xf3\xce~'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///centipede.db'
 
 #contest settings

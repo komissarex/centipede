@@ -40,24 +40,33 @@
                 </ul>
 
                 <ul class="nav pull-right">
-                    <li  {% if active_register is defined %} class="active" {% endif %}>
-                        <a href="/register">Регистрация</a>
-                    </li>
-                    <li class="dropdown" id="login-dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Вход
-                            <b class="caret"></b>
-                        </a>
-                        <div class="dropdown-menu">
-                            <form style="margin: 0px" accept-charset="UTF-8" action="/login" method="post">
-                                <fieldset class='textbox' style="padding:10px">
-                                    <input name="team_id" style="margin-top: 8px" type="text" placeholder="TEAM_ID" />
-                                    <input name="password" style="margin-top: 8px" type="password" placeholder="пароль" />
-                                    <input name="commit" type="submit" value="Вход" />
-                                </fieldset>
-                            </form>
-                        </div>
-                    </li>
+                    {% if session.team_id is defined %}
+                        <li>
+                            <a href="/logout">Выход</a>
+                        </li>
+                    {% else %}
+                        <li  {% if active_registration is defined %} class="active" {% endif %}>
+                            <a href="/registration">Регистрация</a>
+                        </li>
+                        <li class="dropdown" id="login-dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Вход
+                                <b class="caret"></b>
+                            </a>
+
+                            <div class="dropdown-menu">
+                                <form style="margin: 0px" accept-charset="UTF-8" action="/login" method="post">
+                                    <fieldset class='textbox' style="padding:10px">
+                                        <input name="team_id" style="margin-top: 8px" type="text"
+                                               placeholder="TEAM_ID"/>
+                                        <input name="password" style="margin-top: 8px" type="password"
+                                               placeholder="пароль"/>
+                                        <input name="commit" type="submit" value="Вход"/>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -65,22 +74,42 @@
 </div>
 
 <div class="container">
+    <div class="row">
+        {% block legend %}{% endblock %}
+    </div>
+    <div class="row">
+        {% block flashes %}
+            {% with messages = get_flashed_messages(with_categories = true) %}
+                {% if messages %}
+
+                    {% for category, message in messages %}
+                        <div class="alert {{ category }}">{{ message }}</div>
+                    {% endfor %}
+
+                {% endif %}
+            {% endwith %}
+        {% endblock %}
+    </div>
 
     <div class="row">
         {% block content %}{% endblock %}
     </div>
 
-    <hr>
 
-    <footer>
-        <small>
-            &copy; 2012<a href="javascript:void(0)" class="easter-egg">,</a> powered by somebody that you used to know.
-            <br>
+    <div class="row">
+        <hr>
+        <footer>
+            <p class="pull-right">
+                <small>&copy; 2012<a href="javascript:void(0)" class="easter-egg">,</a> powered by somebody that you used to
+                know.</small>
+                <br>
 
-            <p class="real-copyright hide">do you really want to contact me? try <a href="mailto:komissarex@gmail.com">komissarex[at]gmail.com</a>
-                then.</p>
-        </small>
-    </footer>
+                <small class="real-copyright hide">do you really want to contact me? try <a
+                        href="mailto:komissarex@gmail.com">komissarex[at]gmail.com</a>
+                    then.</small>
+            </p>
+        </footer>
+    </div>
 
 </div>
 
