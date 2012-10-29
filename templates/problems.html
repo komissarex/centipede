@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Задачи
+{% endblock %}
+
+{% block content %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Задача</th>
+            <th>Всего попыток</th>
+            <th>Успешных попыток</th>
+            <th>Решаемость</th>
+        </tr>
+        </thead>
+        {% for problem in problems %}
+            <tr>
+                <td><a href="/problems/{{ problem.id }}">{{ problem.title }}</a></td>
+                <td>100</td>
+                <td>50</td>
+                <td>50%</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

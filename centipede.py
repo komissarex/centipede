@@ -3,7 +3,6 @@
 from flask import Flask, request, redirect, url_for, session, flash
 from flask.templating import render_template
 from flask.ext.sqlalchemy import SQLAlchemy
-import sqlalchemy
 from hashlib import md5
 import time, datetime 
 
@@ -61,6 +60,18 @@ def logout():
     session.pop('team_id', None)
     flash(u'Вы вышли из системы', 'alert-success')
     return redirect(url_for('index'))
+
+@centipede.route('/problems')
+def problems():
+    from models import Problem
+    problems = db.session.query(Problem.id, Problem.title).all()
+    return render_template('problems.html', problems = problems, active_problems = True)
+
+@centipede.route('/problems/<int:id>')
+def problem_view(id):
+    from models import Problem
+    problem = Problem.query.filter_by(id = id).first_or_404()
+    return render_template('problem_view.html', problem = problem)
 
 if __name__ == '__main__':
     centipede.run(host = 'localhost', port = 8080, debug = True)

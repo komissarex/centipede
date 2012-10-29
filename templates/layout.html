@@ -7,6 +7,7 @@
     <title>{% block title %}{% endblock %}</title>
 
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
     <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon"/>
     <style>
         body {
@@ -26,13 +27,13 @@
                 <ul class="nav">
                     <li class="divider-vertical"></li>
                     <li {% if active_problems is defined %} class="active" {% endif %}>
-                        <a href="#">Задачи</a>
+                        <a href="/problems">Задачи</a>
                     </li>
                     <li  {% if active_status is defined %} class="active" {% endif %}>
                         <a href="#about">Состояние системы</a>
                     </li>
                     <li  {% if active_rank is defined %} class="active" {% endif %}>
-                        <a href="#contact">Таблица результатов</a>
+                        <a href="#contact">Результаты</a>
                     </li>
                     <li  {% if active_question is defined %} class="active" {% endif %}>
                         <a href="#">Вопрос жюри</a>
@@ -83,7 +84,10 @@
                 {% if messages %}
 
                     {% for category, message in messages %}
-                        <div class="alert {{ category }}">{{ message }}</div>
+                        <div class="alert {{ category }}">
+                            <a class="close" data-dismiss="alert" href="#">&times;</a>
+                            {{ message }}
+                        </div>
                     {% endfor %}
 
                 {% endif %}
@@ -99,15 +103,12 @@
     <div class="row">
         <hr>
         <footer>
-            <p class="pull-right">
-                <small>&copy; 2012<a href="javascript:void(0)" class="easter-egg">,</a> powered by somebody that you used to
-                know.</small>
-                <br>
+            <small class="pull-right">&copy; 2012, powered by som<i class="easter-egg" data-placement="right"
+                                                 title="do you really want to contact me? try komissarex[at]gmail.com then.">e</i>body
+                that you used to
+                know.
+            </small>
 
-                <small class="real-copyright hide">do you really want to contact me? try <a
-                        href="mailto:komissarex@gmail.com">komissarex[at]gmail.com</a>
-                    then.</small>
-            </p>
         </footer>
     </div>
 
@@ -117,9 +118,7 @@
 <script src="/static/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
-        $(".easter-egg").click(function (event) {
-            $(".real-copyright").slideToggle("slow");
-        });
+        $(".easter-egg").tooltip();
 
         $('.dropdown-toggle').dropdown();
         $('.dropdown-menu').find('form').click(function (e) {
