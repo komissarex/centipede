@@ -1,0 +1,32 @@
+{# Solution listing and complilation errors viewer #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/css/highlight.css">
+    <link rel="stylesheet" href="/static/css/plusstrap.min.css">
+    <title>Решение №{{ solution.id }}</title>
+</head>
+
+<body>
+    <pre>
+        <code>
+            {{- content }}
+        </code>
+    </pre>
+
+    {# compilation errors #}
+    {% if solution.message is not none %}
+    <div class="span">
+        <div class="alert alert-error">
+            <pre>
+            {{- solution.message }}
+            </pre>
+        </div>
+    </div>
+    {% endif %}
+
+    <script src="/static/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>

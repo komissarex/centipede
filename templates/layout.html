@@ -1,3 +1,5 @@
+{# Basic layout #}
+
 <!DOCTYPE html>
 
 <html>
@@ -6,9 +8,10 @@
 
     <title>{% block title %}{% endblock %}</title>
 
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/plusstrap.min.css">
     <link rel="stylesheet" href="/static/css/custom.css">
     <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon"/>
+
     <style>
         body {
             padding-top: 60px;
@@ -18,6 +21,7 @@
 </head>
 <body>
 
+{# Navigation bar #}
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -27,27 +31,51 @@
                 <ul class="nav">
                     <li class="divider-vertical"></li>
                     <li {% if active_problems is defined %} class="active" {% endif %}>
-                        <a href="/problems">Задачи</a>
+                        <a href="{{ url_for('problems') }}">Задачи</a>
                     </li>
+                    {% if session.team_id is defined %}
                     <li  {% if active_status is defined %} class="active" {% endif %}>
-                        <a href="#about">Состояние системы</a>
+                        <a href="{{ url_for('status') }}">Состояние системы</a>
                     </li>
+                    {% endif %}
                     <li  {% if active_rank is defined %} class="active" {% endif %}>
                         <a href="#contact">Результаты</a>
                     </li>
+                    {% if session.team_id is defined %}
                     <li  {% if active_question is defined %} class="active" {% endif %}>
                         <a href="#">Вопрос жюри</a>
+                    </li>
+                    {% endif %}
+                    <li class="dropdown" id="login-dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Помощь
+                            <b class="caret"></b>
+                        </a>
+
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a tabindex="-1" href="#">Общая информация о системе</a></li>
+                            <li><a tabindex="-1" href="#">Правила соревнований</a></li>
+                        </ul>
                     </li>
                 </ul>
 
                 <ul class="nav pull-right">
                     {% if session.team_id is defined %}
-                        <li>
-                            <a href="/logout">Выход</a>
+                        <li class="dropdown" id="profile-dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                {{ session.team_id }}
+                                <b class="caret"></b>
+                            </a>
+
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a tabindex="-1" href="#">Профиль</a></li>
+                                <li class="divider"></li>
+                                <li><a tabindex="-1" href="{{ url_for('logout') }}">Выход</a></li>
+                            </ul>
                         </li>
                     {% else %}
                         <li  {% if active_registration is defined %} class="active" {% endif %}>
-                            <a href="/registration">Регистрация</a>
+                            <a href="{{ url_for('register') }}">Регистрация</a>
                         </li>
                         <li class="dropdown" id="login-dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -75,9 +103,12 @@
 </div>
 
 <div class="container">
+    {# Content legend #}
     <div class="row">
         {% block legend %}{% endblock %}
     </div>
+
+    {# Flash messages #}
     <div class="row">
         {% block flashes %}
             {% with messages = get_flashed_messages(with_categories = true) %}
@@ -95,31 +126,17 @@
         {% endblock %}
     </div>
 
+    {# Content by itself #}
     <div class="row">
         {% block content %}{% endblock %}
-    </div>
-
-
-    <div class="row">
-        <hr>
-        <footer>
-            <small class="pull-right">&copy; 2012, powered by som<i class="easter-egg" data-placement="right"
-                                                 title="do you really want to contact me? try komissarex[at]gmail.com then.">e</i>body
-                that you used to
-                know.
-            </small>
-
-        </footer>
     </div>
 
 </div>
 
 <script src="/static/js/jquery-1.8.2.min.js"></script>
-<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/plusstrap.min.js"></script>
 <script>
     $(document).ready(function () {
-        $(".easter-egg").tooltip();
-
         $('.dropdown-toggle').dropdown();
         $('.dropdown-menu').find('form').click(function (e) {
             e.stopPropagation();

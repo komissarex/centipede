@@ -1,0 +1,50 @@
+{# Active contest problems list #}
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Статус проверки
+{% endblock %}
+
+{% block content %}
+    {% if not solutions %}
+        Вы еще не отправили ни одного решения.
+    {% else %}
+        <table class="table table-bordered table-striped table-centered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Дата</th>
+                <th>Задача</th>
+                <th>Язык</th>
+                <th>Результат</th>
+                <th>Время</th>
+                <th>Память</th>
+                <th>№ теста</th>
+            </tr>
+            </thead>
+            {% for solution in solutions %}
+                <tr>
+                    <td><a href="{{ url_for('solution', id  = solution.id) }}">{{ solution.id }}</a></td>
+                    <td>{{ solution.submitted.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td><a href="problems/{{ solution.problem.id }}">{{ solution.problem.title }}</a></td>
+                    <td>{{ solution.language.name }}</td>
+                    <td>
+                        {% if solution.status == solution.STATUS['accept'] %}
+                        <span class="label label-success">
+                        {% elif solution.status in solution.STATUS['error'].values() %}
+                        <span class="label label-important">
+                        {% else %}
+                        <span class="label">
+                        {% endif %}
+                           {{ solution.status }}
+                        </span>
+                    </td>
+                    <td>0.587</td>
+                    <td>626548</td>
+                    <td>5</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}

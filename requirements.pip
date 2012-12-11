@@ -1,5 +1,5 @@
 # requirements can be installed by running `pip install -r requirements.pip`
 Flask
-sqlalchemy
 Flask-sqlalchemy
 wtforms
+psycopg2

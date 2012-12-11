@@ -1,3 +1,5 @@
+{# Problem view #}
+
 {% extends "layout.html" %}
 
 {% block title %}
@@ -5,6 +7,7 @@
 {% endblock %}
 
 {% block content %}
+    {# Tile, time/memory restrictions #}
     <div class="span12 center">
         <h3>{{ problem.title }}</h3>
 
@@ -13,11 +16,15 @@
             Ограничение памяти: {{ problem.memory }} МБ
         </p>
     </div>
+
+    {# Problem content #}
     <div class="span12">
         <p>
             {{ problem.content|safe }}
         </p>
     </div>
+
+    {# Input/output #}
     <div class="span12">
         <h4>Исходные данные: </h4>
 
@@ -32,18 +39,11 @@
             {{ problem.output|safe }}
         </p>
     </div>
-    {% if problem.hint is not none %}
-        <div class="span12">
-            <h4>Подсказка: </h4>
 
-            <p>
-                {{ problem.hint|safe }}
-            </p>
-        </div>
-    {% endif %}
+    {# Examples #}
     <div class="span12">
         <h4>Пример: </h4>
-        <table class="table table-bordered table-striped table-condensed">
+        <table class="table table-bordered table-striped table-condensed table-examples">
             <thead>
             <tr>
                 <th>INPUT.TXT</th>
@@ -62,17 +62,30 @@
             {% endfor %}
         </table>
     </div>
+
+    {# Hint #}
+    {% if problem.hint is not none %}
+        <div class="span12">
+            <h4>Подсказка: </h4>
+
+            <p>
+                {{ problem.hint|safe }}
+            </p>
+        </div>
+    {% endif %}
+
+    {# Submit form #}
     <div class="span">
         {% if session.team_id is defined %}
 
             <h4>Отправить на проверку: </h4>
 
-            <form action="/upload" method="post">
-
-                <div class="well well-small"><input type="file">
+            <form action="/submit" method="post" enctype=multipart/form-data>
+                <div class="well well-small">
+                    <input type="file" name="file">
                     <button type="submit" class="btn">Отправить</button>
+                    <input type="hidden" value="{{ problem.id }}" name="problem_id">
                 </div>
-
             </form>
 
         {% else %}
