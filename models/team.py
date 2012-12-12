@@ -1,26 +1,33 @@
 # -*- coding: utf-8 -*-
 
-from centipede import db
+from lib.database import Base
+from sqlalchemy import Column, Integer, String, Text
 
-class Team(db.Model):
+
+class Team(Base):
 
     __tablename__ = u'teams'
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
-    team_id = db.Column(db.String(50), unique = True)
-    team_name = db.Column(db.String(50), unique = True)
-    institution = db.Column(db.String(50))
-    team_members = db.Column(db.Text)
-    password = db.Column(db.String(50))
+    id = Column(Integer, primary_key = True, autoincrement = True)
+    team_id = Column(String(50), unique = True)
+    name = Column(String(50), unique = True)
+    institution = Column(String(50))
+    members = Column(Text)
+    password = Column(String(50))
 
     def generate_team_id(self):
+        """
+        Generate an unique TEAM_ID for team login
+        (something like "57001ABC")
+        """
         import random, string
-        self.team_id = '%05d%s' % (self.id + 0xDEAD, ''.join(random.choice(string.uppercase.replace('0', '')) for x in range(3)))
+        self.team_id = '%05d%s' % (self.id + 0xDEAD,
+                                   ''.join(random.choice(string.uppercase.replace('0', '')) for x in range(3)))
 
-    def __init__(self, team_name, institution, team_members, password):
+    def __init__(self, name, institution, members, password):
         self.password = password
-        self.team_name = team_name
+        self.name = name
         self.institution = institution
-        self.team_members = team_members
+        self.members = members
 
 

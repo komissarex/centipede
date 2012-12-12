@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from centipede import db
+from lib.database import Base, db_session
+from sqlalchemy import *
 from lib.stuff import *
+from sqlalchemy.orm import relationship
 
-class Solution(db.Model):
+class Solution(Base):
 
     __tablename__ = u'solutions'
 
@@ -24,19 +26,19 @@ class Solution(db.Model):
         }
     }
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
-    submitted = db.Column(db.TIMESTAMP, default = db.func.current_timestamp())
-    time = db.Column(db.Integer)
-    memory = db.Column(db.Integer)
-    status = db.Column(db.String)
-    message = db.Column(db.Text)
+    id = Column(Integer, primary_key = True, autoincrement = True)
+    submitted = Column(TIMESTAMP, default = func.current_timestamp())
+    time = Column(Integer)
+    memory = Column(Integer)
+    status = Column(String)
+    message = Column(Text)
 
-    problem_id = db.Column(db.Integer, db.ForeignKey('problems.id'))
-    lang_id = db.Column(db.Integer, db.ForeignKey('languages.id'))
-    team_id = db.Column(db.String, db.ForeignKey('teams.team_id'))
+    problem_id = Column(Integer, ForeignKey('problems.id'))
+    lang_id = Column(Integer, ForeignKey('languages.id'))
+    team_id = Column(String, ForeignKey('teams.team_id'))
 
-    problem = db.relationship('Problem', backref = 'solutions')
-    language = db.relationship('Language')
+    problem = relationship('Problem', backref = 'solutions')
+    language = relationship('Language')
 
     def get_solution_path(self):
         """
@@ -60,13 +62,13 @@ class Solution(db.Model):
 
     def update_status(self, status):
         self.status = status
-        db.session.merge(self)
-        db.session.commit()
+        db_session.merge(self)
+        db_session.commit()
 
     def update_message(self,message):
         self.message = message
-        db.session.merge(self)
-        db.session.commit()
+        db_session.merge(self)
+        db_session.commit()
 
     def __init__(self, problem_id, team_id, lang_id):
         self.problem_id = problem_id

@@ -16,7 +16,7 @@ class CTester(AbstractTester):
             (self.get_compiled_file(), self.solution.get_solution_file()))
 
         if status != 0:
-            self.solution.update_status(self.solution.STATUS['error']['ce'])
+            self.solution.update_status(self.solution.STATUS['error']['ce'].strip())
             self.solution.update_message(output)
             return False
         else:
@@ -25,11 +25,10 @@ class CTester(AbstractTester):
     def run(self):
         if self.compile():
             self.solution.update_status(self.solution.STATUS['waiting']['running'])
-            print(self.solution.problem.tests)
             for test in self.solution.problem.tests:
                 input = open(os.path.join(self.get_compilation_path(), 'input.txt'), 'w+')
                 input.write(test.input)
-                os.spawnvpe(os.P_WAIT, self.get_compiled_file(), [], {'PWD': self.get_compilation_path()})
+                #os.spawnvpe(os.P_WAIT, self.get_compiled_file(), [], {'PWD': self.get_compilation_path()})
                 output = open(os.path.join(self.get_compilation_path(), 'output.txt'), 'w+')
 
                 if input.read().strip() != output.read().strip():

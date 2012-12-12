@@ -4,7 +4,7 @@ PORT = 8080
 DEBUG = True
 
 #database
-SQLALCHEMY_DATABASE_URI = 'postgresql://centipede@localhost/centipede'
+DATABASE_URI = 'postgresql://centipede@localhost/centipede'
 
 #upload settings
 SOLUTIONS_FOLDER = './solutions'

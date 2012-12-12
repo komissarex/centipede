@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*- 
 
-from flask import Flask, request, redirect, url_for, session, flash
+from flask import Flask, request, redirect, url_for, session, flash, abort
 from flask.templating import render_template
-from flask.ext.sqlalchemy import SQLAlchemy
 from hashlib import md5
 
 from lib.stuff import *
@@ -10,8 +9,6 @@ from lib.stuff import *
 centipede = Flask(__name__)
 centipede.config.from_pyfile('config.py')
 centipede.secret_key = centipede.config['SECRET']
-
-db = SQLAlchemy(centipede)
 
 @centipede.route('/')
 def index():
@@ -23,21 +20,22 @@ def register():
     Registration form
     """
     from lib.forms.registration import RegistrationForm
+    from lib.database import db_session
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        from lib.models import Team
+        from models import Team
         team = Team(form.team_name.data, form.institution.data,
                     form.team_members.data, md5(form.password.data).hexdigest())
-        db.session.add(team)
+        db_session.add(team)
         # trying to add to db
         try:
-            db.session.flush()
+            db_session.flush()
         except:
             form.team_name.errors.append(u'Команда с таким названием уже зарегистрирована.')
         else:
             # if success, generate TEAM_ID
             team.generate_team_id()
-            db.session.commit()
+            db_session.commit()
             # store session
             session['team_id'] = team.team_id
             return render_template('registration_success.html', team_id = team.team_id, active_register = True)
@@ -49,7 +47,8 @@ def login():
     Login form
     """
     if request.method == 'POST':
-        from lib.models import Team
+        from models import Team
+        from lib.database import db_session
         if Team.query.filter_by(team_id = request.form['team_id'],
                                 password = md5(request.form['password']).hexdigest()).first():
             session['team_id'] = request.form['team_id']
@@ -74,8 +73,9 @@ def problems():
     """
     Problems list
     """
-    from lib.models import Problem
-    problems = db.session.query(Problem.id, Problem.title).order_by(Problem.id).all()
+    from models import Problem
+    from lib.database import db_session
+    problems = db_session.query(Problem.id, Problem.title).order_by(Problem.id).all()
     return render_template('problems.html', problems = problems, active_problems = True)
 
 @centipede.route('/problems/<int:id>')
@@ -84,8 +84,8 @@ def problem_view(id):
     View a single problem
     :param id: Problem id
     """
-    from lib.models import Problem
-    problem = Problem.query.get_or_404(id)
+    from models import Problem
+    problem = Problem.query.get(id) or abort(404)
     return render_template('problem_view.html', problem = problem)
 
 @centipede.route('/submit', methods = ['GET', 'POST'])
@@ -94,7 +94,8 @@ def submit():
     Action for solution submit
     """
     if request.method == 'POST':
-        from lib.models import Solution
+        from models import Solution
+        from lib.database import db_session
         file = request.files['file']
         if not file:
             flash(u'Эмм, может стоит таки приложить решение?', 'alert-error')
@@ -105,8 +106,8 @@ def submit():
             team_id = session['team_id']
             problem_id = request.form['problem_id']
             solution = Solution(problem_id, team_id, lang_id)
-            db.session.add(solution)
-            db.session.commit()
+            db_session.add(solution)
+            db_session.commit()
 
             # Store solution file
             path = solution.get_solution_path()
@@ -138,7 +139,7 @@ def status():
     """
     Status page for monitoring submitted solutions
     """
-    from lib.models import Solution
+    from models import Solution
     from sqlalchemy import desc
     solutions = Solution.query.filter_by(team_id = session['team_id']).order_by(desc(Solution.id)).all()
     return render_template('status.html', active_status = True, solutions = solutions)
@@ -149,8 +150,8 @@ def solution(id):
     Get solution source
     :param id: Solution ID
     """
-    from lib.models import Solution
-    solution = Solution.query.get_or_404(id)
+    from models import Solution
+    solution = Solution.query.get(id) or abort(404)
     if session['team_id'] == solution.team_id:
         content = file(solution.get_solution_file()).read()
         return render_template('get_solution.html', content = content, solution = solution)

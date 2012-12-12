@@ -23,10 +23,10 @@ def get_lang_id(file):
     :param file: Input file
     :return: Language ID, if extension is valid, or None.
     """
-    from centipede import db
-    from lib.models import Language
+    from lib.database import db_session
+    from models import Language
     filename, ext = os.path.splitext(file)
-    return db.session.query(Language.id).filter_by(file_ext = ext).first()
+    return db_session.query(Language.id).filter_by(file_ext = ext).first()
 
 
 class StreamConsumingMiddleware(object):
