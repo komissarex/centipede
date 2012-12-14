@@ -165,6 +165,11 @@ def solution(id):
         content = file(solution.get_solution_file()).read()
         return render_template('get_solution.html', content = content, solution = solution)
 
+@centipede.errorhandler(404)
+def page_not_found(error):
+    """ 404 error handler """
+    return render_template('page_not_found.html', referrer = request.referrer), 404
+
 def url_for_other_page(page):
     """
     Pagination helper for Jinja
