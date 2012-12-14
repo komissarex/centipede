@@ -14,4 +14,6 @@ MAX_CONTENT_LENGTH = 2 * 1024 * 1024
 #secret passphrase for secure cookies
 SECRET = 'L\xd4\x8c\x15\xe5;\x19\xf8\xb9\xfa.\xac\x82\x95\xe4\x9es\xbcn\xffz\xf3\xce~'
 
+#other
 TITLE = 'Centipede'
+PER_PAGE = 10

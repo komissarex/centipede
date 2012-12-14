@@ -11,18 +11,20 @@ class Solution(Base):
 
     # solutions statuses
     STATUS = {
-        'accept': 'Accept',
-        'error': {
-            'ce': 'Compilation Error',
-            'wa': 'Wrong Answer',
-            'crash': 'Crash!',
-            'tle': 'Time Limit Exceed',
-            'mle': 'Memory Limit Exceed',
+        'tested': {
+            'accept': 'Accept',
+            'error': {
+                'ce': 'Compilation Error',
+                'wa': 'Wrong Answer',
+                'crash': 'Crash!',
+                'tle': 'Time Limit Exceed',
+                'mle': 'Memory Limit Exceed',
+                }
         },
         'waiting': {
             'compiling': 'Compiling...',
             'running': 'Running...',
-            'queue': 'Waiting in queue...'
+            'queue': 'Waiting...'
         }
     }
 

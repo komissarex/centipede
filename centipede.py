@@ -134,15 +134,24 @@ def big_file_error_handler(e):
     flash(u'Размер файла превышает 2 МБ!', 'alert-error')
     return redirect(request.referrer)
 
-@centipede.route('/status')
-def status():
+@centipede.route('/status/', defaults = {'page': 1})
+@centipede.route('/status/page/<int:page>')
+def status(page):
     """
     Status page for monitoring submitted solutions
     """
+
     from models import Solution
     from sqlalchemy import desc
-    solutions = Solution.query.filter_by(team_id = session['team_id']).order_by(desc(Solution.id)).all()
-    return render_template('status.html', active_status = True, solutions = solutions)
+    from lib.pagination import Pagination
+
+    per_page = centipede.config['PER_PAGE']
+    total = Solution.query.filter_by(team_id = session['team_id']).count()
+    solutions = Solution.query.filter_by(team_id = session['team_id']).order_by(desc(Solution.id)).\
+                limit(per_page).offset((page - 1)*per_page)
+
+    pagination = Pagination(page, per_page, total)
+    return render_template('status.html', active_status = True, solutions = solutions, pagination = pagination)
 
 @centipede.route('/solution/<int:id>')
 def solution(id):
@@ -156,7 +165,16 @@ def solution(id):
         content = file(solution.get_solution_file()).read()
         return render_template('get_solution.html', content = content, solution = solution)
 
+def url_for_other_page(page):
+    """
+    Pagination helper for Jinja
+    """
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
+centipede.jinja_env.globals['url_for_other_page'] = url_for_other_page
+
+# development web server starting
 if __name__ == '__main__':
     centipede.wsgi_app = StreamConsumingMiddleware(centipede.wsgi_app) # fix for connection reset on big files upload
-    # development web server start
     centipede.run(host = "localhost", port = 8080, debug = True)

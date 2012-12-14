@@ -30,9 +30,9 @@
                     <td><a href="problems/{{ solution.problem.id }}">{{ solution.problem.title }}</a></td>
                     <td>{{ solution.language.name }}</td>
                     <td>
-                        {% if solution.status == solution.STATUS['accept'] %}
+                        {% if solution.status == solution.STATUS['tested']['accept'] %}
                         <span class="label label-success">
-                        {% elif solution.status in solution.STATUS['error'].values() %}
+                        {% elif solution.status in solution.STATUS['tested']['error'].values() %}
                         <span class="label label-important">
                         {% else %}
                         <span class="label">
@@ -46,5 +46,9 @@
                 </tr>
             {% endfor %}
         </table>
+
+        {% from "_pagination.html" import render_pagination %}
+        {{ render_pagination(pagination) }}
+
     {% endif %}
 {% endblock %}
