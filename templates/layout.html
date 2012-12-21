@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="/static/css/plusstrap.min.css">
     <link rel="stylesheet" href="/static/css/custom.css">
     <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon"/>
+    <script src="/static/js/jquery-1.8.2.min.js"></script>
+    <script src="/static/js/plusstrap.min.js"></script>
 
     <style>
         body {
@@ -31,20 +33,14 @@
                 <ul class="nav">
                     <li class="divider-vertical"></li>
                     <li {% if active_problems is defined %} class="active" {% endif %}>
-                        <a href="{{ url_for('problems') }}">Задачи</a>
+                        <a href="{{ url_for('problemset') }}">Задачи</a>
                     </li>
                     {% if session.team_id is defined %}
-                    <li  {% if active_status is defined %} class="active" {% endif %}>
-                        <a href="{{ url_for('status') }}">Состояние системы</a>
-                    </li>
+                        <li  {% if active_status is defined %} class="active" {% endif %}>
+                            <a href="{{ url_for('status') }}">Состояние системы</a>
+                        </li>
                     {% endif %}
-                    <li  {% if active_rank is defined %} class="active" {% endif %}>
-                        <a href="#contact">Результаты</a>
-                    </li>
                     {% if session.team_id is defined %}
-                    <li  {% if active_question is defined %} class="active" {% endif %}>
-                        <a href="#">Вопрос жюри</a>
-                    </li>
                     {% endif %}
                     <li class="dropdown" id="login-dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -53,8 +49,7 @@
                         </a>
 
                         <ul class="dropdown-menu" role="menu">
-                            <li><a tabindex="-1" href="#">Общая информация о системе</a></li>
-                            <li><a tabindex="-1" href="123">Правила соревнований</a></li>
+                            <li><a tabindex="-1" href="{{ url_for('about') }}">Общая информация о системе</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -68,8 +63,6 @@
                             </a>
 
                             <ul class="dropdown-menu" role="menu">
-                                <li><a tabindex="-1" href="#">Профиль</a></li>
-                                <li class="divider"></li>
                                 <li><a tabindex="-1" href="{{ url_for('logout') }}">Выход</a></li>
                             </ul>
                         </li>
@@ -84,7 +77,7 @@
                             </a>
 
                             <div class="dropdown-menu">
-                                <form style="margin: 0px" accept-charset="UTF-8" action="/login" method="post">
+                                <form style="margin: 0;" accept-charset="UTF-8" action="/login" method="post">
                                     <fieldset class='textbox' style="padding:10px">
                                         <input name="team_id" style="margin-top: 8px" type="text"
                                                placeholder="TEAM_ID"/>
@@ -133,8 +126,6 @@
 
 </div>
 
-<script src="/static/js/jquery-1.8.2.min.js"></script>
-<script src="/static/js/plusstrap.min.js"></script>
 <script>
     $(document).ready(function () {
         $('.dropdown-toggle').dropdown();

@@ -16,9 +16,10 @@ class Solution(Base):
             'error': {
                 'ce': 'Compilation Error',
                 'wa': 'Wrong Answer',
-                'crash': 'Crash!',
-                'tle': 'Time Limit Exceed',
-                'mle': 'Memory Limit Exceed',
+                're': 'Runtime Error',
+                'pe': 'Presentation Error',
+                'tle': 'Time Limit Exceeded',
+                'mle': 'Memory Limit Exceeded',
                 }
         },
         'waiting': {
@@ -30,10 +31,11 @@ class Solution(Base):
 
     id = Column(Integer, primary_key = True, autoincrement = True)
     submitted = Column(TIMESTAMP, default = func.current_timestamp())
-    time = Column(Integer)
+    time = Column(Float)
     memory = Column(Integer)
     status = Column(String)
     message = Column(Text)
+    test_number = Column(Integer, default = None)
 
     problem_id = Column(Integer, ForeignKey('problems.id'))
     lang_id = Column(Integer, ForeignKey('languages.id'))
@@ -56,19 +58,21 @@ class Solution(Base):
         filename = str(self.id) + self.language.file_ext
         return os.path.join(self.get_solution_path(), filename)
 
-    def get_solution_tester(self):
+    def update(self, status, message = None, test_number = None, time = None, memory = None):
         """
-        :return: Tester instance for current solution
+        Update solution information and commit to database
         """
-        pass
-
-    def update_status(self, status):
         self.status = status
-        db_session.merge(self)
-        db_session.commit()
 
-    def update_message(self,message):
-        self.message = message
+        if message:
+            self.message = message
+        if test_number:
+            self.test_number = test_number
+        if time:
+            self.time = time
+        if memory:
+            self.memory = memory
+
         db_session.merge(self)
         db_session.commit()
 

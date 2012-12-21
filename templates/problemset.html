@@ -1,0 +1,41 @@
+{# Active contest problems list #}
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Задачи
+{% endblock %}
+
+{% block content %}
+    <table class="table table-striped table-bordered table-centered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Задача</th>
+            <th class="total">Всего попыток</th>
+            <th class="success">Успешных</th>
+            <th class="ratio">Решаемость</th>
+        </tr>
+        </thead>
+        {% for problem in problems %}
+            <tr>
+                <td>{{ problem.id }}</td>
+                <td><a href="{{ url_for('problem', id = problem.id) }}">{{ problem.title }}</a></td>
+                <td>{{ problem.total }}</td>
+                <td>
+                    {% if problem.success %}
+                        {{ problem.success }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if problem.total %}
+                        {{ (problem.success / problem.total * 100)|int }}%
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {% from "_pagination.html" import render_pagination %}
+    {{ render_pagination(pagination) }}
+{% endblock %}

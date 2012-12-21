@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from lib.database import Base
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String
 
 class Language(Base):
     """
-    Available rogramming languages
+    Available programming languages
     """
 
     __tablename__ = u'languages'

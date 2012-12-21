@@ -9,24 +9,19 @@
 </head>
 
 <body>
-    <pre>
-        <code>
-            {{- content }}
-        </code>
-    </pre>
 
-    {# compilation errors #}
-    {% if solution.message is not none %}
+<pre><code>{{- content }}</code></pre>
+
+{# compilation errors #}
+{% if solution.message %}
     <div class="span">
         <div class="alert alert-error">
-            <pre>
-            {{- solution.message }}
-            </pre>
+            <pre>{{- solution.message }}</pre>
         </div>
     </div>
-    {% endif %}
+{% endif %}
 
-    <script src="/static/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+<script src="/static/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 </body>
 </html>

@@ -1,0 +1,220 @@
+{# Information about system #}
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Информация о системе
+{% endblock %}
+
+{% block content %}
+    <h4>
+        Как осуществляется ввод/вывод данных?
+    </h4>
+    <div class="span">
+        Ввод и вывод данных осуществляется с помощью файлов. Все входные данные задачи сдержатся в файле
+        <i>input.txt</i>,
+        выводить результат работы программы необходимо в <i>output.txt</i>.
+    </div>
+    <div class="clearfix"></div>
+    <h4>
+        Как происходит отправка решения?
+    </h4>
+    <div class="span">
+        Отправлять решения можно только зарегистрированным пользователям в виде исходного кода в файлах с расширениями
+        *.c, *.cpp, *.pas
+    </div>
+    <div class="clearfix"></div>
+    <h4>
+        Какие языки программирования поддерживаются системой?
+    </h4>
+    <div class="span">
+        На данный момент поддерживаются следующие языки программирования:
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>
+                    Компилятор
+                </th>
+                <th>
+                    Версия
+                </th>
+                <th>
+                    Строка компиляции
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>GNU C</td>
+                <td>4.7.2</td>
+                <td>gcc -std=c99 -O2 -o {output} -x c {source}</td>
+            </tr>
+            <tr>
+                <td>GNU C++</td>
+                <td>4.7.2</td>
+                <td>g++ -O2 -o {output} -x c++ {source}</td>
+            </tr>
+            <tr>
+                <td>Free Pascal</td>
+                <td>2.6.0</td>
+                <td>fpc -So -XS {source} -o{output}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <h4>
+        Как должно выглядеть решение на моём любимом языке программирования?
+    </h4>
+    <div class="span">
+        Ниже представлено решение задачи <a href="{{ url_for('problem', id = 1) }}">A + B</a> на самых популярных языках
+        программирования.
+        <ul class="nav nav-tabs" id="lang-tab">
+            <li class="active"><a href="#lang-c">С</a></li>
+            <li><a href="#lang-cpp">С++</a></li>
+            <li><a href="#lang-pascal">Pascal</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="lang-c">
+<pre><code>
+    #include &lt;stdio.h&gt;
+
+    int main()
+    {
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+
+        long a, b;
+        scanf("%ld%ld", &a, &b);
+
+        printf("%ld", a + b);
+
+        return 0;
+    }
+</code></pre>
+            </div>
+            <div class="tab-pane" id="lang-cpp">
+<pre><code>
+    #include &lt;fstream&gt;
+
+    int main()
+    {
+        std::ifstream fin("input.txt");
+        std::ofstream fout("output.txt");
+
+        int a, b;
+
+        fin >> a >> b;
+        fout << a + b;
+
+        return 0;
+    }
+</code></pre>
+            </div>
+            <div class="tab-pane" id="lang-pascal">
+<pre><code>
+    var
+    a, b : longint;
+
+    begin
+        assign(input, 'input.txt');
+        assign(output, 'output.txt');
+        reset(input);
+        rewrite(output);
+
+        read(a, b);
+        write(a + b);
+
+        close(input);
+        close(output);
+    end.
+</code></pre>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                $('#lang-tab a').click(function (e) {
+                    e.preventDefault();
+                    $(this).tab('show');
+                });
+            });
+
+        </script>
+
+    </div>
+    <div class="clearfix"></div>
+
+    <h4>
+        Как происходит тестирование решений?
+    </h4>
+    <div class="span">
+        Каждое отправленное решение проходит на сервере проверку, как правило, не менее, чем на 10 тестах, специально
+        составленных для анализа Ваших решений.
+        Задача считается решенной только в случае прохождения всех тестов. В случае неверного решения процесс
+        тестирования прерывается на тесте, определившем ошибку.
+        Результаты тестирования задач можно видеть в разделе "<a href="{{ url_for('status') }}">Состояние
+        системы</a>".
+        Результатом проверки является итоговое сообщение системы и номер теста, вызвавшего ошибку (если таковая имела
+        место).
+        По нажатии на ID решения в разделе "<a href="{{ url_for('status') }}">Состояние системы</a>" пользователи могут просматривать тексты своих
+        отправленных программ, а так же видеть там ошибки компиляции в случае вердикта "Compilation Error".
+    </div>
+    <div class="clearfix"></div>
+    <h4>
+        Какие итоговые сообщения системы бывают?
+    </h4>
+    <div class="span">
+       <table class="table table-condensed table-bordered">
+           <thead>
+           <tr>
+               <th>Вердикт</th>
+               <th>Событие</th>
+           </tr>
+           </thead>
+           <tbody>
+           <tr>
+               <td><span class="label">Waiting...</span></td>
+               <td>Решение находится в очереди компиляции</td>
+           </tr>
+           <tr>
+               <td><span class="label">Compiling...</span></td>
+               <td>Компиляция решения</td>
+           </tr>
+           <tr>
+               <td><span class="label">Running...</span></td>
+               <td>Тестирование решения</td>
+           </tr>
+            <tr>
+                <td><span class="label label-success">Accept</span></td>
+                <td>Программа работает правильно и прошла все необходимые тесты с соблюдением всех ограничений</td>
+            </tr>
+            <tr>
+                <td><span class="label label-important">Wrong Answer</span></td>
+                <td>Неверный ответ</td>
+            </tr>
+           <tr>
+               <td><span class="label label-important">Time Limit Exceeded</span></td>
+               <td>Превышен лимит времени</td>
+           </tr>
+           <tr>
+               <td><span class="label label-important">Memory Limit Exceeded</span></td>
+               <td>Превышен лимит памяти</td>
+           </tr>
+           <tr>
+               <td><span class="label label-important">Compilation Error</span></td>
+               <td>Ошибка при компляции программы</td>
+           </tr>
+           <tr>
+               <td><span class="label label-important">Runtime Error</span></td>
+               <td>Ошибка времени исполнения (обращение к несуществующему элементу массива, деление на ноль, etc.)</td>
+           </tr>
+           <tr>
+               <td><span class="label label-important">Presentation Error</span></td>
+               <td>Отсутствие выходного файла <i>output.txt</i></td>
+           </tr>
+           </tbody>
+       </table>
+    </div>
+    <div class="clearfix"></div>
+{% endblock %}

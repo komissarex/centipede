@@ -2,13 +2,18 @@
 
 from flask import Flask, request, redirect, url_for, session, flash, abort
 from flask.templating import render_template
+from threading import BoundedSemaphore
 from hashlib import md5
+from importlib import import_module
 
 from lib.stuff import *
 
 centipede = Flask(__name__)
 centipede.config.from_pyfile('config.py')
 centipede.secret_key = centipede.config['SECRET']
+
+global tester_semaphore
+tester_semaphore = BoundedSemaphore(centipede.config['SAME_TIME_THREADS'])
 
 @centipede.route('/')
 def index():
@@ -49,11 +54,11 @@ def login():
     if request.method == 'POST':
         from models import Team
         from lib.database import db_session
-        if Team.query.filter_by(team_id = request.form['team_id'],
-                                password = md5(request.form['password']).hexdigest()).first():
+        if Team.query.filter_by(team_id = request.form['team_id'].encode("utf-8"),
+                                password = md5(request.form['password'].encode("utf-8")).hexdigest()).first():
             session['team_id'] = request.form['team_id']
             flash(u'Вход в систему выполнен успешно', 'alert-success')
-            return redirect(request.referrer)
+            return redirect(url_for('index'))
         else:
             flash(u'Команда с таким TEAM_ID и паролем не найдена.', 'alert-error')
             return redirect(url_for('login'))
@@ -68,25 +73,39 @@ def logout():
     flash(u'Вы вышли из системы', 'alert-success')
     return redirect(url_for('index'))
 
-@centipede.route('/problems')
-def problems():
-    """
-    Problems list
-    """
-    from models import Problem
-    from lib.database import db_session
-    problems = db_session.query(Problem.id, Problem.title).order_by(Problem.id).all()
-    return render_template('problems.html', problems = problems, active_problems = True)
-
-@centipede.route('/problems/<int:id>')
-def problem_view(id):
+@centipede.route('/problem/<int:id>')
+def problem(id):
     """
     View a single problem
     :param id: Problem id
     """
     from models import Problem
     problem = Problem.query.get(id) or abort(404)
-    return render_template('problem_view.html', problem = problem)
+    return render_template('problem.html', problem = problem)
+
+@centipede.route('/problemset/', defaults = {'page': 1})
+@centipede.route('/problemset/page/<int:page>')
+def problemset(page):
+    """
+    Problems list
+    """
+    from models import Problem, Solution
+    from lib.database import db_session
+    from lib.pagination import Pagination
+
+    per_page = centipede.config['PER_PAGE']
+    total = Problem.query.count()
+    problems = db_session.query(Problem.id, Problem.title).order_by(Problem.id).\
+        limit(per_page).offset((page - 1) * per_page).all()
+    pagination = Pagination(page, per_page, total)
+
+    for problem in problems:
+        problem.total = Solution.query.filter_by(problem_id = problem.id).count()
+        problem.success = Solution.query.filter_by(
+            problem_id = problem.id,
+            status = Solution.STATUS['tested']['accept']
+        ).count()
+    return render_template('problemset.html', problems = problems, active_problems = True, pagination = pagination)
 
 @centipede.route('/submit', methods = ['GET', 'POST'])
 def submit():
@@ -98,8 +117,8 @@ def submit():
         from lib.database import db_session
         file = request.files['file']
         if not file:
-            flash(u'Эмм, может стоит таки приложить решение?', 'alert-error')
             return redirect(request.referrer)
+
         lang_id = get_lang_id(file.filename)
         if lang_id:
             # Create solution in database
@@ -116,8 +135,9 @@ def submit():
                 os.makedirs(path)
             file.save(solution_file)
 
-            from lib.testers import c
-            tester = c.CTester(solution)
+
+            tester_module = import_module('lib.testers.{tester_name}'.format(tester_name = solution.language.tester_name))
+            tester = tester_module.Tester(solution, tester_semaphore)
             tester.start()
 
         else:
@@ -131,7 +151,7 @@ def big_file_error_handler(e):
     Error handler for RequestEntityTooLarge exception,
     which raises for upload some big files
     """
-    flash(u'Размер файла превышает 2 МБ!', 'alert-error')
+    flash(u'Размер файла превышает 256 КБ!', 'alert-error')
     return redirect(request.referrer)
 
 @centipede.route('/status/', defaults = {'page': 1})
@@ -140,18 +160,19 @@ def status(page):
     """
     Status page for monitoring submitted solutions
     """
-
     from models import Solution
     from sqlalchemy import desc
     from lib.pagination import Pagination
 
-    per_page = centipede.config['PER_PAGE']
-    total = Solution.query.filter_by(team_id = session['team_id']).count()
-    solutions = Solution.query.filter_by(team_id = session['team_id']).order_by(desc(Solution.id)).\
-                limit(per_page).offset((page - 1)*per_page)
-
-    pagination = Pagination(page, per_page, total)
-    return render_template('status.html', active_status = True, solutions = solutions, pagination = pagination)
+    if 'team_id' in session:
+        per_page = centipede.config['PER_PAGE']
+        total = Solution.query.filter_by(team_id = session['team_id']).count()
+        solutions = Solution.query.filter_by(team_id = session['team_id']).order_by(desc(Solution.id)).\
+                    limit(per_page).offset((page - 1) * per_page).all()
+        pagination = Pagination(page, per_page, total)
+        return render_template('status.html', active_status = True, solutions = solutions, pagination = pagination)
+    else:
+        return redirect(url_for('index'))
 
 @centipede.route('/solution/<int:id>')
 def solution(id):
@@ -162,8 +183,18 @@ def solution(id):
     from models import Solution
     solution = Solution.query.get(id) or abort(404)
     if session['team_id'] == solution.team_id:
-        content = file(solution.get_solution_file()).read()
+        try:
+            content = file(solution.get_solution_file()).read().encode("utf-8")
+        except UnicodeDecodeError:
+            content = 'INCORRECT FILE'
         return render_template('get_solution.html', content = content, solution = solution)
+
+@centipede.route('/help/about/')
+def about():
+    """
+    Help page
+    """
+    return render_template('help/about.html')
 
 @centipede.errorhandler(404)
 def page_not_found(error):

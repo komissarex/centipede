@@ -1,4 +1,4 @@
-{# Active contest problems list #}
+{# Submitted solutions status #}
 
 {% extends "layout.html" %}
 
@@ -7,42 +7,59 @@
 {% endblock %}
 
 {% block content %}
-    {% if not solutions %}
+    {% if not solutions%}
         Вы еще не отправили ни одного решения.
     {% else %}
-        <table class="table table-bordered table-striped table-centered">
+        <table class="table table-bordered table-striped table-centered table-condensed">
             <thead>
             <tr>
                 <th>ID</th>
-                <th>Дата</th>
-                <th>Задача</th>
+                <th class="date">Дата</th>
+                <th class="problem">Задача</th>
                 <th>Язык</th>
                 <th>Результат</th>
+                <th>№ теста</th>
                 <th>Время</th>
                 <th>Память</th>
-                <th>№ теста</th>
             </tr>
             </thead>
             {% for solution in solutions %}
                 <tr>
                     <td><a href="{{ url_for('solution', id  = solution.id) }}">{{ solution.id }}</a></td>
-                    <td>{{ solution.submitted.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                    <td><a href="problems/{{ solution.problem.id }}">{{ solution.problem.title }}</a></td>
+                    <td class="date">
+                        {{ solution.submitted.strftime('%H:%M:%S') }}
+                        <br>
+                        {{ solution.submitted.strftime('%d/%m/%Y') }}
+                    </td>
+                    <td><a href="{{ url_for('problem', id = solution.problem.id) }}">{{ solution.problem.title }}</a>
+                    </td>
                     <td>{{ solution.language.name }}</td>
                     <td>
                         {% if solution.status == solution.STATUS['tested']['accept'] %}
-                        <span class="label label-success">
+                            <span class="label label-success">
                         {% elif solution.status in solution.STATUS['tested']['error'].values() %}
-                        <span class="label label-important">
+                            <span class="label label-important">
                         {% else %}
-                        <span class="label">
+                            <span class="label">
                         {% endif %}
-                           {{ solution.status }}
+                        {{ solution.status }}
                         </span>
                     </td>
-                    <td>0.587</td>
-                    <td>626548</td>
-                    <td>5</td>
+                    <td>
+                        {% if solution.test_number %}
+                            {{ solution.test_number }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if solution.time is not none %}
+                            {{ '%0.3f' % solution.time }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if solution.memory %}
+                            {{ solution.memory }} КБ
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </table>

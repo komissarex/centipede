@@ -10,7 +10,7 @@
                 {% if page %}
                     {% if page != pagination.page %}
                         <li><a href="{{ url_for_other_page(page) }}">{{ page }}</a></li>
-                    {% else %}
+                    {% elif pagination.per_page <= pagination.total_count %}
                         <li class="active"><span>{{ page }}</span></li>
                     {% endif %}
                 {% else %}
